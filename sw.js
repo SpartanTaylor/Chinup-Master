@@ -1,4 +1,4 @@
-const CACHE="weighted-chinup-master-v12-warmup-feeler";
+const CACHE="weighted-chinup-master-v13-inline-warmup-icon";
 self.addEventListener("install",event=>{
   self.skipWaiting();
   event.waitUntil(caches.open(CACHE).then(cache=>
