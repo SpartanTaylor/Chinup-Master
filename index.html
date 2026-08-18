@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+<title>WEIGHTED CHINUP CALCULATOR</title>
+<!-- CANONICAL MASTER BUILD: master-v12-warmup-feeler -->
+<style>
+:root{
+  --bg:#09090a;
+  --panel:#151516;
+  --panel-2:#1b1b1d;
+  --field:#202023;
+  --line:#4a4a4d;
+  --text:#f5f5f7;
+  --muted:#b7b7bc;
+  --gold:#f5c535;
+  --blue:#1789ff;
+  --purple:#d33cff;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  margin:0;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 50% -12%,#1a1a1c 0,#0d0d0e 33%,#080809 72%);
+  min-height:100vh;
+}
+button,input,select{font:inherit}
+.app-shell{
+  width:min(100%,820px);
+  margin:0 auto;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 8px calc(18px + env(safe-area-inset-bottom,0px));
+}
+.app-bar{
+  display:grid;
+  grid-template-columns:52px 1fr 52px;
+  align-items:center;
+  min-height:72px;
+  margin-bottom:4px;
+}
+.app-title{
+  text-align:center;
+  font-size:clamp(21px,4.8vw,30px);
+  font-weight:800;
+  letter-spacing:-.6px;
+  white-space:nowrap;
+}
+.nav-icon,.gear-icon{
+  width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;
+  border:0;background:transparent;color:var(--blue);
+  padding:0;
+}
+.nav-icon{flex-direction:column;gap:5px}
+.nav-icon span{
+  display:block;width:31px;height:3px;border-radius:4px;background:var(--blue)
+}
+.gear-icon{font-size:36px;line-height:1}
+.app-card{
+  margin:10px 0;
+  padding:16px 16px 18px;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:10px;
+  background:
+    linear-gradient(180deg,rgba(26,26,28,.97),rgba(16,16,17,.98));
+  box-shadow:0 8px 24px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.025);
+}
+.section-heading{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:8px;
+}
+.section-heading h2{
+  margin:0;
+  font-size:clamp(16px,3.55vw,23px);
+  line-height:1.15;
+  font-weight:800;
+  letter-spacing:-.25px;
+  text-transform:uppercase;
+}
+.section-icon{
+  width:42px;height:42px;flex:none;
+  display:grid;place-items:center;
+  font-weight:800;
+  background:transparent;
+}
+.target-icon{
+  color:var(--blue);
+  border:2px solid var(--blue);
+  font-size:29px;
+  line-height:1;
+}
+.chart-icon{
+  color:var(--purple);
+  background:rgba(211,60,255,.16);
+  font-size:26px;
+}
+.input-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0 16px;
+}
+.actual-grid label:first-child{grid-column:1/-1}
+label{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  margin:12px 0 0;
+  color:#efeff2;
+  font-size:clamp(13px,3.25vw,18px);
+  font-weight:500;
+  line-height:1.2;
+}
+input,select{
+  width:100%;
+  height:58px;
+  padding:0 15px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:9px;
+  color:#fff;
+  background:linear-gradient(180deg,#242426,#1b1b1d);
+  outline:none;
+  font-size:clamp(17px,4.2vw,23px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+select{
+  appearance:none;
+  -webkit-appearance:none;
+  padding-right:43px;
+  background-image:
+    linear-gradient(45deg,transparent 50%,#b9b9bd 50%),
+    linear-gradient(135deg,#b9b9bd 50%,transparent 50%),
+    linear-gradient(180deg,#242426,#1b1b1d);
+  background-position:
+    calc(100% - 23px) 25px,
+    calc(100% - 16px) 25px,
+    0 0;
+  background-size:7px 7px,7px 7px,100% 100%;
+  background-repeat:no-repeat;
+}
+input:focus,select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 2px rgba(23,137,255,.18);
+}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+.section-rule,.output-divider{
+  height:1px;background:rgba(255,255,255,.28);margin:18px 0 12px
+}
+.result{
+  margin-top:18px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--muted);
+  line-height:1.4;
+}
+.integrated-result{
+  border-top:1px solid rgba(255,255,255,.28);
+  padding-top:13px;
+}
+.compact-result{margin-top:14px}
+.output-group{display:grid;gap:0}
+.output-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:47px;
+}
+.output-label{
+  color:#f1f1f3;
+  font-size:clamp(14px,3.55vw,20px);
+  font-weight:500;
+}
+.output-value{
+  color:var(--text);
+  font-size:clamp(16px,3.9vw,22px);
+  font-weight:650;
+  text-align:right;
+  white-space:nowrap;
+}
+.output-row.key .output-label{font-size:clamp(15px,3.65vw,21px)}
+.output-row.key .output-value{font-size:clamp(20px,4.8vw,27px);font-weight:800}
+.output-row.gold .number-part{color:var(--gold)}
+.output-row.gold .unit-part{color:var(--text);font-size:.78em;margin-left:4px}
+.copy-wrap{display:inline-flex;align-items:center;justify-content:flex-end;gap:10px}
+.copy-btn{
+  width:42px;height:42px;min-height:0;flex:none;
+  display:grid;place-items:center;
+  padding:0;margin:0;
+  border:1.5px solid var(--blue);
+  border-radius:9px;
+  background:rgba(23,137,255,.03);
+  color:var(--blue);
+  font-size:22px;line-height:1;
+}
+.copy-btn:active{transform:scale(.96)}
+.copy-btn.copied{border-color:var(--gold);color:var(--gold)}
+.plates-heading{display:none}
+.plate-lines{display:none}
+.plate-visual{
+  margin-top:10px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:#fff;
+  overflow:hidden;
+}
+.visual-set{margin-top:12px}
+.visual-heading{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:12px;
+  align-items:center;
+  margin:4px 0 8px;
+  font-size:clamp(13px,3.3vw,17px);
+  font-weight:800;
+  text-transform:uppercase;
+}
+.visual-heading::before,.visual-heading::after{
+  content:"";height:1px;background:rgba(255,255,255,.27)
+}
+.belt-stage{
+  display:flex;
+  align-items:center;
+  min-width:max-content;
+  height:164px;
+  padding:0 4px;
+}
+.belt-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+  flex:none;
+  width:88px;
+}
+.belt-strap{
+  width:58px;height:62px;
+  border-radius:5px 0 0 5px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.04),transparent 18%),
+    repeating-linear-gradient(0deg,#1b1b1c 0 2px,#202022 2px 4px);
+  border:1px solid #3c3c3e;
+  box-shadow:inset 0 0 0 1px #121213;
+}
+.belt-strap::after{
+  content:"";
+  position:absolute;
+  left:6px;right:27px;top:50%;
+  border-top:1px dashed #6c6c70;
+}
+.belt-loop{
+  width:34px;height:72px;
+  margin-left:-7px;
+  border:5px solid #b6b6b8;
+  border-left:0;
+  border-radius:0 28px 28px 0;
+  box-shadow:inset -2px 0 0 rgba(255,255,255,.25);
+}
+.plate-stack{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-left:0;
+  flex:none;
+}
+.plate-block{
+  position:relative;
+  display:grid;place-items:center;
+  margin:0;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:
+    inset 3px 0 0 rgba(255,255,255,.12),
+    inset -4px 0 0 rgba(0,0,0,.20),
+    0 2px 5px rgba(0,0,0,.28);
+}
+.plate-block span{
+  position:relative;z-index:1;
+  color:#fff;font-size:17px;font-weight:800;
+  text-shadow:0 1px 2px rgba(0,0,0,.75);
+}
+.chain{
+  width:210px;
+  height:12px;
+  flex:none;
+  margin-left:7px;
+  border-radius:6px;
+  background:#8f8f93;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.18),
+    inset 0 -2px 0 rgba(0,0,0,.18);
+}
+.chain::after{display:none}
+.visual-total{
+  text-align:center;
+  margin-top:-7px;
+  font-size:clamp(14px,3.4vw,18px);
+}
+.visual-total strong{font-size:1.1em}
+.card-footer{
+  border-top:1px solid rgba(255,255,255,.26);
+  margin-top:14px;
+  padding-top:12px;
+  color:#c4c4c8;
+  text-align:center;
+  font-size:13px;
+  line-height:1.35;
+}
+.card-footer span{color:#e8a72b}
+.result.has-output{animation:sectionFade .22s ease-out}
+@keyframes sectionFade{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(max-width:390px){
+  .app-shell{padding-left:6px;padding-right:6px}
+  .app-card{padding-left:12px;padding-right:12px}
+  .input-grid{gap:0 10px}
+  input,select{height:54px;padding-left:11px}
+  .section-heading{gap:9px}
+  .section-icon{width:36px;height:36px}
+  .belt-stage{transform:scale(.9);transform-origin:left center;width:111%}
+}
+@media(max-width:345px){
+  .input-grid{grid-template-columns:1fr}
+  .actual-grid label:first-child{grid-column:auto}
+}
+
+html{color-scheme:dark}
+select option{
+  background:#1b1b1d;
+  color:#ffffff;
+}
+select optgroup{
+  background:#1b1b1d;
+  color:#ffffff;
+}
+
+
+.section-icon svg{width:100%;height:100%;display:block}
+.scales-icon{color:var(--blue);width:42px;height:42px;flex:none;background:transparent}
+.sonar-icon{color:#36d26f;width:42px;height:42px;flex:none;background:transparent}
+.stocks-icon{color:var(--purple);width:42px;height:42px;flex:none;background:transparent;padding:4px}
+.gear-icon svg{width:38px;height:38px;display:block}
+
+
+.micro-toggle-row{
+  display:flex;
+  justify-content:flex-end;
+  margin:-2px 4px 8px;
+}
+.micro-toggle-label{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  color:#f1f1f3;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+.ios-switch{
+  position:relative;
+  display:inline-block;
+  width:51px;
+  height:31px;
+  flex:none;
+}
+.ios-switch input{
+  position:absolute;
+  opacity:0;
+  width:1px;
+  height:1px;
+  pointer-events:none;
+}
+.ios-slider{
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  background:#3a3a3c;
+  transition:background .18s ease;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.ios-slider::before{
+  content:"";
+  position:absolute;
+  width:27px;
+  height:27px;
+  left:2px;
+  top:2px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 5px rgba(0,0,0,.35);
+  transition:transform .18s ease;
+}
+.ios-switch input:checked + .ios-slider{
+  background:#34c759;
+}
+.ios-switch input:checked + .ios-slider::before{
+  transform:translateX(20px);
+}
+.ios-switch input:focus-visible + .ios-slider{
+  outline:2px solid var(--blue);
+  outline-offset:2px;
+}
+
+
+label > input,
+
+
+
+.micro-toggle-label{
+display:flex;
+align-items:center;
+justify-content:flex-end;
+flex-wrap:nowrap !important;
+white-space:nowrap;
+gap:10px;
+}
+
+
+/* MASTER v5 FINAL overrides */
+.micro-toggle-row{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  margin:-2px 4px 8px;
+}
+.micro-toggle-control{
+  display:inline-flex;
+  flex-direction:row;
+  flex-wrap:nowrap;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  white-space:nowrap;
+}
+.micro-toggle-text{
+  display:inline-block;
+  white-space:nowrap;
+  color:#f1f1f3;
+  font-size:15px;
+  font-weight:600;
+  line-height:31px;
+}
+.micro-toggle-control .ios-switch{
+  flex:0 0 51px;
+  margin:0;
+}
+.card-footer{
+  border-top:1px solid rgba(255,255,255,.26);
+  margin-top:14px;
+  padding-top:12px;
+  color:#c4c4c8;
+  text-align:center;
+  font-size:13px;
+  line-height:1.35;
+}
+
+
+.cooldown-icon{width:54px;height:42px;flex:none;background:transparent}
+.cooldown-icon svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* Unit + microplate controls */
+.options-toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:-2px 4px 8px;
+  flex-wrap:nowrap;
+}
+.unit-toggle-control,
+.micro-toggle-control{
+  display:inline-flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  white-space:nowrap;
+  gap:8px;
+}
+.unit-choice,
+.micro-toggle-text{
+  color:#f1f1f3;
+  font-size:15px;
+  font-weight:600;
+  line-height:31px;
+}
+.unit-toggle-control .ios-switch,
+.micro-toggle-control .ios-switch{
+  flex:0 0 51px;
+  margin:0;
+}
+@media(max-width:390px){
+  .options-toggle-row{gap:8px;margin-left:0;margin-right:0}
+  .unit-toggle-control,.micro-toggle-control{gap:6px}
+  .unit-choice,.micro-toggle-text{font-size:13px}
+}
+
+
+/* MASTER v10 sticky controls toolbar */
+.title-header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:72px;
+  padding:0 8px;
+}
+.sticky-toolbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:grid;
+  grid-template-columns:44px auto 1fr 44px;
+  align-items:center;
+  gap:10px;
+  min-height:56px;
+  margin:0 -8px 10px;
+  padding:calc(6px + env(safe-area-inset-top,0px)) 10px 6px;
+  background:rgba(12,12,13,.82);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  backdrop-filter:blur(18px) saturate(150%);
+  border-top:1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 6px 18px rgba(0,0,0,.22);
+}
+.toolbar-icon{
+  width:40px;
+  height:40px;
+  min-width:40px;
+}
+.sticky-toolbar .unit-toggle-control{justify-self:start}
+.sticky-toolbar .micro-toggle-control{justify-self:end}
+.sticky-toolbar .unit-choice,
+.sticky-toolbar .micro-toggle-text{font-size:13px}
+.sticky-toolbar .ios-switch{
+  width:45px;
+  height:27px;
+}
+.sticky-toolbar .ios-slider::before{
+  width:23px;
+  height:23px;
+  left:2px;
+  top:2px;
+}
+.sticky-toolbar .ios-switch input:checked + .ios-slider::before{
+  transform:translateX(18px);
+}
+.sticky-toolbar .gear-icon svg{
+  width:32px;
+  height:32px;
+}
+@media(max-width:430px){
+  .sticky-toolbar{
+    grid-template-columns:38px auto 1fr 38px;
+    gap:6px;
+    padding-left:6px;
+    padding-right:6px;
+  }
+  .sticky-toolbar .unit-toggle-control,
+  .sticky-toolbar .micro-toggle-control{gap:5px}
+  .sticky-toolbar .unit-choice,
+  .sticky-toolbar .micro-toggle-text{font-size:12px}
+  .sticky-toolbar .ios-switch{
+    width:41px;
+    height:25px;
+  }
+  .sticky-toolbar .ios-slider::before{
+    width:21px;
+    height:21px;
+  }
+  .sticky-toolbar .ios-switch input:checked + .ios-slider::before{
+    transform:translateX(16px);
+  }
+}
+
+</style>
+</head>
+<body>
+<main class="app-shell">
+  <header class="title-header">
+    <div class="app-title">WEIGHTED CHINUP CALCULATOR</div>
+  </header>
+
+  <div class="sticky-toolbar" role="toolbar" aria-label="Calculator controls">
+    <button class="nav-icon toolbar-icon" type="button" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="unit-toggle-control" aria-label="Weight units">
+      <span class="unit-choice">LBS</span>
+      <label class="ios-switch" for="unitToggle">
+        <input id="unitToggle" type="checkbox">
+        <span class="ios-slider"></span>
+      </label>
+      <span class="unit-choice">KG</span>
+    </div>
+
+    <div class="micro-toggle-control">
+      <span class="micro-toggle-text">Microplates</span>
+      <label class="ios-switch" for="microplatesToggle">
+        <input id="microplatesToggle" type="checkbox" checked>
+        <span class="ios-slider"></span>
+      </label>
+    </div>
+
+    <button class="gear-icon toolbar-icon" type="button" aria-label="Settings">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M27 4h10l2 8a23 23 0 0 1 5 2l7-4 7 7-4 7a23 23 0 0 1 2 5l8 2v10l-8 2a23 23 0 0 1-2 5l4 7-7 7-7-4a23 23 0 0 1-5 2l-2 8H27l-2-8a23 23 0 0 1-5-2l-7 4-7-7 4-7a23 23 0 0 1-2-5l-8-2V31l8-2a23 23 0 0 1 2-5l-4-7 7-7 7 4a23 23 0 0 1 5-2z" fill="currentColor"/>
+        <circle cx="32" cy="36" r="10" fill="#09090a"/>
+      </svg>
+    </button>
+  </div>
+<section class="app-card daily-card">
+    <div class="section-heading">
+      <span class="section-icon scales-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <rect x="10" y="8" width="44" height="48" rx="10" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M22 24a10 10 0 0 1 20 0" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M32 24l6-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="24" r="2.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <h2>Daily Inputs</h2>
+    </div>
+    <div class="input-grid">
+      <label><span>Bodyweight (<span class="unit-label">lbs</span>)</span><input id="bw" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Bodyweight + Belt (<span class="unit-label">lbs</span>)</span><input id="bwbelt" type="number" step="0.1" inputmode="decimal"></label>
+    </div>
+  </section>
+
+  <section class="app-card">
+    <div class="section-heading">
+      <span class="section-icon sonar-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <defs>
+            <linearGradient id="radarSweepFade" x1="32" y1="32" x2="54" y2="18" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="currentColor" stop-opacity=".05"/>
+              <stop offset=".55" stop-color="currentColor" stop-opacity=".18"/>
+              <stop offset="1" stop-color="currentColor" stop-opacity=".55"/>
+            </linearGradient>
+            <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="currentColor" stop-opacity=".9"/>
+              <stop offset=".45" stop-color="currentColor" stop-opacity=".35"/>
+              <stop offset="1" stop-color="currentColor" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <circle cx="32" cy="32" r="27" fill="rgba(54,210,111,.06)" stroke="currentColor" stroke-width="3.2"/>
+          <circle cx="32" cy="32" r="19" fill="none" stroke="currentColor" stroke-width="1.8" opacity=".52"/>
+          <circle cx="32" cy="32" r="11" fill="none" stroke="currentColor" stroke-width="1.8" opacity=".42"/>
+
+          <path d="M32 32L54 18A27 27 0 0 1 58 32Z" fill="url(#radarSweepFade)"/>
+          <path d="M32 32L54 18" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+
+          <circle cx="18" cy="23" r="6" fill="url(#radarGlow)"/>
+          <circle cx="18" cy="23" r="2.4" fill="currentColor"/>
+          <circle cx="46" cy="40" r="5.2" fill="url(#radarGlow)"/>
+          <circle cx="46" cy="40" r="2.2" fill="currentColor"/>
+          <circle cx="32" cy="32" r="2.7" fill="currentColor"/>
+        </svg>
+      </span>
+      <h2>Warmup Set → Feeler Set Recommendation</h2>
+    </div>
+
+    <div class="input-grid">
+      <label>Warmup Set Reps (@ bodyweight only)<input id="warmupReps" type="number" min="1" max="12" step="1" inputmode="numeric"></label>
+      <label>Warmup Set RIR / RPE<select id="warmupRpe"></select></label>
+      <label>Target Feeler Set Reps<input id="targetFeelerReps" type="number" min="1" max="12" step="1" inputmode="numeric"></label>
+      <label>Target Feeler Set RIR / RPE<select id="targetFeelerRpe"></select></label>
+    </div>
+
+    <div class="result integrated-result" id="feelerOutput">Enter your warmup set and feeler target.</div>
+  </section>
+
+  <section class="app-card">
+    <div class="section-heading">
+      <span class="section-icon sonar-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <defs>
+            <linearGradient id="radarSweepFade2" x1="32" y1="32" x2="54" y2="18" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="currentColor" stop-opacity=".05"/>
+              <stop offset=".55" stop-color="currentColor" stop-opacity=".18"/>
+              <stop offset="1" stop-color="currentColor" stop-opacity=".55"/>
+            </linearGradient>
+            <radialGradient id="radarGlow2" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="currentColor" stop-opacity=".9"/>
+              <stop offset=".45" stop-color="currentColor" stop-opacity=".35"/>
+              <stop offset="1" stop-color="currentColor" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <circle cx="32" cy="32" r="27" fill="rgba(54,210,111,.06)" stroke="currentColor" stroke-width="3.2"/>
+          <circle cx="32" cy="32" r="19" fill="none" stroke="currentColor" stroke-width="1.8" opacity=".52"/>
+          <circle cx="32" cy="32" r="11" fill="none" stroke="currentColor" stroke-width="1.8" opacity=".42"/>
+
+          <path d="M32 32L54 18A27 27 0 0 1 58 32Z" fill="url(#radarSweepFade2)"/>
+          <path d="M32 32L54 18" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+
+          <circle cx="18" cy="23" r="6" fill="url(#radarGlow2)"/>
+          <circle cx="18" cy="23" r="2.4" fill="currentColor"/>
+          <circle cx="46" cy="40" r="5.2" fill="url(#radarGlow2)"/>
+          <circle cx="46" cy="40" r="2.2" fill="currentColor"/>
+          <circle cx="32" cy="32" r="2.7" fill="currentColor"/>
+        </svg>
+      </span>
+      <h2>Feeler Set → Top Set Recommendation</h2>
+    </div>
+
+    <div class="input-grid actual-grid">
+      <label><span>Actual Feeler Added Weight (<span class="unit-label">lbs</span>)</span><input id="actualFeelerLoad" type="number" min="0" step="0.001" inputmode="decimal"></label>
+      <label>Actual Feeler Set Reps<input id="actualFeelerReps" type="number" min="1" max="12" step="1" inputmode="numeric"></label>
+      <label>Actual Feeler Set RIR / RPE<select id="actualFeelerRpe"></select></label>
+      <label>Target Top Set Reps<input id="targetTopReps" type="number" min="1" max="12" step="1" inputmode="numeric"></label>
+      <label>Target Top Set RIR / RPE<select id="targetTopRpe"></select></label>
+    </div>
+
+    <div class="result integrated-result" id="topOutput">Enter your actual feeler set and top-set target.</div>
+  </section>
+
+  <section class="app-card">
+    <div class="section-heading">
+      <span class="section-icon stocks-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <rect x="10" y="35" width="10" height="18" rx="2" fill="currentColor"/>
+          <rect x="27" y="28" width="10" height="25" rx="2" fill="currentColor"/>
+          <rect x="44" y="18" width="10" height="35" rx="2" fill="currentColor"/>
+          <path d="M8 31h14l9-12h8L52 6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M45 6h9v9" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <h2>Top Set</h2>
+    </div>
+
+    <div class="input-grid actual-grid">
+      <label><span>Actual Added Weight (<span class="unit-label">lbs</span>)</span><input id="actualLoad" type="number" min="0" step="0.001" inputmode="decimal"></label>
+      <label>Actual Top Set Reps<input id="actualReps" type="number" min="1" max="12" step="1" inputmode="numeric"></label>
+      <label>Actual Top Set RIR / RPE<select id="actualRpe"></select></label>
+    </div>
+
+    <div class="result integrated-result compact-result" id="e1rmOutput">Enter your actual top set.</div>
+  </section>
+
+  <section class="app-card">
+    <div class="section-heading">
+      <span class="section-icon cooldown-icon" aria-hidden="true">
+        <svg viewBox="0 0 96 64">
+          <defs>
+            <linearGradient id="coolBlue" x1="0" y1="0" x2="0.85" y2="1">
+              <stop offset="0" stop-color="#7fd3ff"/>
+              <stop offset=".58" stop-color="#2f8cff"/>
+              <stop offset="1" stop-color="#0b5ee8"/>
+            </linearGradient>
+          </defs>
+          <circle cx="28" cy="32" r="24" fill="url(#coolBlue)"/>
+          <g stroke="#ffffff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M28 14v36M12.5 23l31 18M12.5 41l31-18"/>
+            <path d="M28 14l-5 5M28 14l5 5M28 50l-5-5M28 50l5-5"/>
+            <path d="M12.5 23l7 1M12.5 23l3 6M43.5 41l-7-1M43.5 41l-3-6"/>
+            <path d="M12.5 41l7-1M12.5 41l3-6M43.5 23l-7 1M43.5 23l-3 6"/>
+          </g>
+          <g stroke="#2f8cff" stroke-linecap="round" fill="none">
+            <path d="M52 20h23" stroke-width="4.5"/>
+            <path d="M52 32h31" stroke-width="5"/>
+            <path d="M52 44h20" stroke-width="4.5"/>
+          </g>
+          <circle cx="82" cy="20" r="3.2" fill="#2f8cff"/>
+          <circle cx="88" cy="32" r="3.2" fill="#2f8cff"/>
+          <circle cx="78" cy="44" r="3.2" fill="#2f8cff"/>
+          <g transform="translate(73 41) scale(.42)" stroke="#2f8cff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M24 0v48M3 12l42 24M3 36l42-24"/>
+            <path d="M24 0l-6 6M24 0l6 6M24 48l-6-6M24 48l6-6"/>
+            <path d="M3 12l8 1M3 12l3 7M45 36l-8-1M45 36l-3-7"/>
+            <path d="M3 36l8-1M3 36l3-7M45 12l-8 1M45 12l-3 7"/>
+          </g>
+        </svg>
+      </span>
+      <h2>Backoffs/ Cooldowns</h2>
+    </div>
+
+    <div class="input-grid">
+      <label>Backoff Reps<input id="backoffReps" type="number" min="1" max="12" step="1" inputmode="numeric"></label>
+      <label>Backoff RIR / RPE Cap<select id="backoffRpe"></select></label>
+    </div>
+
+    <div class="result integrated-result" id="backoffOutput">Enter your actual top set, backoff reps and RPE cap.</div>
+
+    <div class="card-footer">Calculations use the RTS RPE table</div>
+  </section>
+</main>
+
+<script>
+const rpeLabels=[
+["0 RIR   RPE 10",10],["0.5 RIR   RPE 9.5",9.5],["1 RIR   RPE 9",9],
+["1.5 RIR   RPE 8.5",8.5],["2 RIR   RPE 8",8],["2.5 RIR   RPE 7.5",7.5],
+["3 RIR   RPE 7",7],["3.5 RIR   RPE 6.5",6.5],["4 RIR   RPE 6",6],
+["4.5 RIR   RPE 5.5",5.5],["5 RIR   RPE 5",5],["5.5 RIR   RPE 4.5",4.5],
+["6 RIR   RPE 4",4],["6.5 RIR   RPE 3.5",3.5],["7 RIR   RPE 3",3],
+["7.5 RIR   RPE 2.5",2.5],["8 RIR   RPE 2",2],["8.5 RIR   RPE 1.5",1.5],
+["9 RIR   RPE 1",1]
+];
+
+// User-provided chart. Values are percentages, not decimals.
+const chart={
+1:[100,97.8,95.5,93,91,89,87,85,83,81,79,77,75,73,71,69,67,65,63],
+2:[95.5,93.5,91,89,87,85,83,81,79,77,75,73,71,69,67,65,63,61,59],
+3:[92.2,90,87.5,85.5,83.5,81.5,79.5,77.5,75.5,73.5,71.5,69.5,67.5,65.5,63.5,61.5,59.5,57.5,55.5],
+4:[89.2,87,84.5,82.5,80.5,78.5,76.5,74.5,72.5,70.5,68.5,66.5,64.5,62.5,60.5,58.5,56.5,54.5,52.5],
+5:[86.3,84,81.5,79.5,77.5,75.5,73.5,71.5,69.5,67.5,65.5,63.5,61.5,59.5,57.5,55.5,53.5,51.5,49.5],
+6:[83.7,81.5,79,77,75,73,71,69,67,65,63,61,59,57,55,53,51,49,47],
+7:[81.1,79.5,76.5,75,73,71,69,67,65,63,61,59,57,55,53,51,49,47,45],
+8:[78.6,76.5,74,72,70,68,66,64,62,60,58,56,54,52,50,48,46,44,42],
+9:[76.2,74,71.5,69.5,67.5,65.5,63.5,61.5,59.5,57.5,55.5,53.5,51.5,49.5,47.5,45.5,43.5,41.5,39.5],
+10:[73.9,71.5,69,67,65,63,61,59,57,55,53,51,49,47,45,43,41,39,37],
+11:[71.8,69.5,67,65,63,61,59,57,55,53,51,49,47,45,43,41,39,37,35],
+12:[69.8,67.5,65,63,61,59,57,55,53,51,49,47,45,43,41,39,37,35,33]
+};
+
+const rpes=[10,9.5,9,8.5,8,7.5,7,6.5,6,5.5,5,4.5,4,3.5,3,2.5,2,1.5,1];
+
+function fillSelect(id){
+ const s=document.getElementById(id);
+ rpeLabels.forEach(([label,val])=>{
+  const o=document.createElement("option");o.value=val;o.textContent=label;s.appendChild(o);
+ });
+}
+["warmupRpe","targetFeelerRpe","actualFeelerRpe","targetTopRpe","actualRpe","backoffRpe"].forEach(fillSelect);
+
+// Unit-aware plate inventory. The app uses the user's fixed 2.2 lb = 1 kg mapping.
+const LB_PER_KG=2.2;
+const plateInventory={
+ lbs:{unlimited:[44,33,22,11,5.5,2.75],micro:[2.2,1.1,0.55,0.275]},
+ kg:{unlimited:[20,15,10,5,2.5,1.25],micro:[1,0.5,0.25,0.125]}
+};
+const platePairs=[
+ {lbs:44,kg:20},{lbs:33,kg:15},{lbs:22,kg:10},{lbs:11,kg:5},{lbs:5.5,kg:2.5},
+ {lbs:2.75,kg:1.25},{lbs:2.2,kg:1},{lbs:1.1,kg:0.5},{lbs:0.55,kg:0.25},{lbs:0.275,kg:0.125}
+];
+
+function currentUnit(){return document.getElementById("unitToggle")?.checked?"kg":"lbs"}
+function unitSuffix(){return currentUnit()==="kg"?"kg":"lbs"}
+function convertWeight(value,fromUnit,toUnit){
+ if(!Number.isFinite(value) || fromUnit===toUnit)return value;
+ return fromUnit==="lbs"?value/LB_PER_KG:value*LB_PER_KG;
+}
+function formatInputValue(value){
+ if(!Number.isFinite(value))return "";
+ return Number(value.toFixed(3)).toString();
+}
+function convertEnteredWeights(fromUnit,toUnit){
+ ["bw","bwbelt","actualFeelerLoad","actualLoad"].forEach(id=>{
+   const input=document.getElementById(id);
+   const value=parseFloat(input.value);
+   if(Number.isFinite(value))input.value=formatInputValue(convertWeight(value,fromUnit,toUnit));
+ });
+}
+function updateUnitLabels(){
+ const suffix=unitSuffix();
+ document.querySelectorAll(".unit-label").forEach(el=>el.textContent=suffix);
+}
+
+function plateCombo(target){
+ target=Math.max(0,target);
+ const unit=currentUnit();
+ const inventory=plateInventory[unit];
+ const scale=1000;
+ const T=Math.floor(target*scale+1e-7);
+ let best=-1,bestCount=Infinity,bestVec=null;
+ const microplatesOn=document.getElementById("microplatesToggle")?.checked ?? true;
+ const microMax=microplatesOn?2:0;
+ const [m0,m1,m2,m3]=inventory.micro;
+ for(let a=0;a<=microMax;a++)for(let b=0;b<=microMax;b++)for(let c=0;c<=microMax;c++)for(let d=0;d<=microMax;d++){
+   const micros=[a,b,c,d];
+   const microSum=Math.round((a*m0+b*m1+c*m2+d*m3)*scale);
+   if(microSum>T)continue;
+   let rem=T-microSum;
+   const counts=[];
+   let n=0;
+   for(const plate of inventory.unlimited){
+     const plateUnits=Math.round(plate*scale);
+     const q=Math.floor(rem/plateUnits);
+     counts.push(q);n+=q;rem-=q*plateUnits;
+   }
+   const total=T-rem;
+   const vec=[...counts,...micros];
+   const count=n+a+b+c+d;
+   if(total>best || (total===best && count<bestCount)){
+     best=total;bestCount=count;bestVec=vec;
+   }
+ }
+ if(best<=0)return {total:0,counts:[]};
+ const denominations=[...inventory.unlimited,...inventory.micro];
+ const counts=[];
+ bestVec.forEach((n,i)=>{
+   if(n>0){
+     const pair=unit==="lbs"
+       ? platePairs.find(x=>x.lbs===denominations[i])
+       : platePairs.find(x=>x.kg===denominations[i]);
+     counts.push({count:n,lbs:pair.lbs,kg:pair.kg,display:denominations[i]});
+   }
+ });
+ return {total:best/scale,counts};
+}
+function pct(reps,rpe){
+ if(!chart[reps])return null;
+ const i=rpes.indexOf(Number(rpe));
+ return i<0?null:chart[reps][i]/100;
+}
+
+function val(id){return parseFloat(document.getElementById(id).value)}
+
+function selectedRpe(id){
+ const select=document.getElementById(id);
+ if(!select || select.selectedIndex<0)return null;
+ return rpes[select.selectedIndex] ?? null;
+}
+
+
+const plateStyles={
+  "44":{height:152,width:48,color:"#111111"},
+  "33":{height:142,width:46,color:"#294d96"},
+  "22":{height:132,width:44,color:"#c626c7"},
+  "11":{height:120,width:42,color:"#dc2027"},
+  "5.5":{height:104,width:40,color:"#f45110"},
+  "2.75":{height:92,width:47,color:"#ffe123"},
+  "2.2":{height:84,width:43,color:"#294d96"},
+  "1.1":{height:76,width:39,color:"#1db34a"},
+  "0.55":{height:68,width:36,color:"#961bf2"},
+  "0.275":{height:60,width:33,color:"#b9c2d4"}
+};
+
+function plateVisual(load){
+ if(!load.counts || load.counts.length===0)return "";
+ const unit=currentUnit();
+ const suffix=unitSuffix();
+ const blocks=[];
+ load.counts.forEach(item=>{
+   const style=plateStyles[String(item.lbs)]||{height:68,width:36,color:"#555"};
+   const label=unit==="kg"?item.kg:item.lbs;
+   for(let i=0;i<item.count;i++){
+     blocks.push(`<div class="plate-block" style="height:${style.height}px;width:${style.width}px;background:${style.color}"><span>${label}</span></div>`);
+   }
+ });
+ return `<div class="plate-visual">
+   <div class="visual-set">
+     <div class="visual-heading"><span>Plates to use (${suffix})</span></div>
+     <div class="belt-stage">
+       <div class="belt-wrap"><div class="belt-strap"></div><div class="belt-loop"></div></div>
+       <div class="plate-stack">${blocks.join("")}</div>
+       <div class="chain"></div>
+     </div>
+     <div class="visual-total">Total: <strong>${load.total.toFixed(2)}</strong> ${suffix}</div>
+   </div>
+ </div>`;
+}
+
+function outputRow(label,value,key=false,gold=false,copy=false){
+ const raw=String(value);
+ const match=raw.match(/^(-?\d+(?:\.\d+)?)(.*)$/);
+ const numberPart=match ? match[1] : raw;
+ const suffixPart=match ? match[2] : "";
+ const displayValue=gold
+  ? `<span class="number-part">${numberPart}</span><span class="unit-part">${suffixPart}</span>`
+  : raw;
+ const numericCopy=numberPart;
+ const valueHtml=copy
+  ? `<span class="copy-wrap"><span class="output-value">${displayValue}</span><button class="copy-btn" type="button" aria-label="Copy ${label}" onclick="copyOutput(this,'${numericCopy}')">⧉</button></span>`
+  : `<span class="output-value">${displayValue}</span>`;
+ return `<div class="output-row${key?" key":""}${gold?" gold":""}"><span class="output-label">${label}</span>${valueHtml}</div>`;
+}
+
+async function copyOutput(button,text){
+ try{
+   await navigator.clipboard.writeText(text);
+ }catch{
+   const area=document.createElement("textarea");
+   area.value=text;
+   area.style.position="fixed";
+   area.style.opacity="0";
+   document.body.appendChild(area);
+   area.select();
+   document.execCommand("copy");
+   area.remove();
+ }
+ const old=button.textContent;
+ button.textContent="✓";
+ button.classList.add("copied");
+ setTimeout(()=>{button.textContent=old;button.classList.remove("copied")},900);
+}
+
+function recommendationOutput(targetLabel,targetTotal,exactAdded,load,bwbelt){
+ const suffix=unitSuffix();
+ return `<div class="output-group">
+   ${outputRow(targetLabel,`${targetTotal.toFixed(2)} ${suffix}`,false,false)}
+   ${outputRow("Exact added weight required",`${Math.max(0,exactAdded).toFixed(2)} ${suffix}`)}
+   <div class="output-divider"></div>
+   ${outputRow("Suggested weight (load on belt)",`${load.total.toFixed(2)} ${suffix}`,true,true,true)}
+   ${outputRow("Actual total weight (achievable)",`${(bwbelt+load.total).toFixed(2)} ${suffix}`,true,true,true)}
+   ${plateVisual(load)}
+ </div>`;
+}
+
+
+function setResult(id,htmlContent){
+ const el=document.getElementById(id);
+ const hadOutput=el.dataset.ready==="1";
+ el.innerHTML=htmlContent;
+ const nowReady=htmlContent && !htmlContent.startsWith("Enter ");
+ if(nowReady && !hadOutput){
+   el.classList.remove("has-output");
+   void el.offsetWidth;
+   el.classList.add("has-output");
+ }
+ el.dataset.ready=nowReady?"1":"0";
+}
+function recalc(){
+ const bw=val("bw"),bwbelt=val("bwbelt");
+
+ // Warmup Set -> Feeler Set recommendation.
+ const wr=parseInt(document.getElementById("warmupReps").value);
+ const wp=pct(wr,selectedRpe("warmupRpe"));
+ const tfr=parseInt(document.getElementById("targetFeelerReps").value);
+ const tfp=pct(tfr,selectedRpe("targetFeelerRpe"));
+
+ let feelerText="Enter your warmup set and feeler target.";
+ if(wp && bw>0){
+   const warmupE1rm=bw/wp;
+   if(tfp && bwbelt>0){
+     const idealFeeler=warmupE1rm*tfp;
+     const exactFeelerAdded=idealFeeler-bwbelt;
+     const feelerLoad=plateCombo(exactFeelerAdded);
+     feelerText=recommendationOutput("Suggested total weight",idealFeeler,exactFeelerAdded,feelerLoad,bwbelt);
+   }
+ }
+ setResult("feelerOutput",feelerText);
+
+ // Actual Feeler Set -> Top Set recommendation.
+ const afl=val("actualFeelerLoad");
+ const afr=parseInt(document.getElementById("actualFeelerReps").value);
+ const afp=pct(afr,selectedRpe("actualFeelerRpe"));
+ const ttr=parseInt(document.getElementById("targetTopReps").value);
+ const ttp=pct(ttr,selectedRpe("targetTopRpe"));
+
+ let topText="Enter your actual feeler set and top-set target.";
+ if(afp && bwbelt>0 && !isNaN(afl)){
+   const actualFeelerTotal=bwbelt+afl;
+   const feelerE1rm=actualFeelerTotal/afp;
+   if(ttp){
+     const idealTop=feelerE1rm*ttp;
+     const exactTopAdded=idealTop-bwbelt;
+     const topLoad=plateCombo(exactTopAdded);
+     topText=recommendationOutput("Suggested total weight",idealTop,exactTopAdded,topLoad,bwbelt);
+   }
+ }
+ setResult("topOutput",topText);
+
+ // Actual Top Set -> Daily e1RM -> Backoffs/Cooldowns.
+ const al=val("actualLoad"),ar=parseInt(document.getElementById("actualReps").value),ap=pct(ar,selectedRpe("actualRpe"));
+ let eText="Enter your actual top set.";
+ if(ap && bwbelt>0 && !isNaN(al)){
+   const actualTotal=bwbelt+al;
+   const e1rm=actualTotal/ap;
+   eText=`<div class="output-group">${outputRow("Daily e1RM",`${e1rm.toFixed(2)} ${unitSuffix()}`,true,true,true)}</div>`;
+   setResult("e1rmOutput",eText);
+
+   const br=parseInt(document.getElementById("backoffReps").value);
+   const backoffPct=pct(br,selectedRpe("backoffRpe"));
+   if(backoffPct){
+     const idealBack=e1rm*backoffPct;
+     const exactBack=idealBack-bwbelt;
+     const backLoad=plateCombo(exactBack);
+     let bText=recommendationOutput("Backoff target total weight",idealBack,exactBack,backLoad,bwbelt);
+     setResult("backoffOutput",bText);
+   }else{
+     setResult("backoffOutput","Enter your actual top set, backoff reps and RPE cap.");
+   }
+ }else{
+   setResult("e1rmOutput",eText);
+   setResult("backoffOutput","Enter your actual top set, backoff reps and RPE cap.");
+ }
+
+ const data={};
+ document.querySelectorAll("input,select").forEach(x=>{
+   data[x.id]=x.type==="checkbox"?x.checked:x.value;
+ });
+ localStorage.setItem("weighted-chinup-master-v12-warmup-feeler",JSON.stringify(data));
+}
+
+const storageKey="weighted-chinup-master-v12-warmup-feeler";
+const previousKey="weighted-chinup-master-v11-app-icon";
+const currentSaved=localStorage.getItem(storageKey);
+const previousSaved=localStorage.getItem(previousKey);
+const saved=JSON.parse(currentSaved||previousSaved||"{}");
+
+// Migrate the previous workflow into the closest matching new fields once.
+// Old Feeler inputs become Warmup inputs.
+// Old Target Top Set inputs remain the new Target Top Set inputs.
+if(!currentSaved && previousSaved){
+ if(saved.feelerReps!==undefined && saved.warmupReps===undefined)saved.warmupReps=saved.feelerReps;
+ if(saved.feelerRpe!==undefined && saved.warmupRpe===undefined)saved.warmupRpe=saved.feelerRpe;
+ if(saved.targetReps!==undefined && saved.targetTopReps===undefined)saved.targetTopReps=saved.targetReps;
+ if(saved.targetRpe!==undefined && saved.targetTopRpe===undefined)saved.targetTopRpe=saved.targetRpe;
+}
+
+Object.entries(saved).forEach(([k,v])=>{
+ const e=document.getElementById(k);
+ if(!e)return;
+ if(e.type==="checkbox")e.checked=Boolean(v);
+ else e.value=v;
+});
+updateUnitLabels();
+
+document.querySelectorAll("input,select").forEach(e=>{
+ if(e.id==="unitToggle")return;
+ e.addEventListener("input",recalc);
+ e.addEventListener("change",recalc);
+});
+let lastUnit=currentUnit();
+document.getElementById("unitToggle").addEventListener("change",()=>{
+ const nextUnit=currentUnit();
+ convertEnteredWeights(lastUnit,nextUnit);
+ lastUnit=nextUnit;
+ updateUnitLabels();
+ recalc();
+});
+recalc();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
